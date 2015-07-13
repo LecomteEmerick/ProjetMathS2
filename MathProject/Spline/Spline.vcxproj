@@ -68,13 +68,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="common\EsgiShader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OpenGLHelper.cpp" />
+    <ClCompile Include="OpenGLRenderer.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="Spline.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\EsgiShader.h" />
+    <ClInclude Include="OpenGLHelper.h" />
+    <ClInclude Include="OpenGLInclude.h" />
+    <ClInclude Include="OpenGLRenderer.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Spline.h" />
+    <ClInclude Include="virtualOpenGL.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

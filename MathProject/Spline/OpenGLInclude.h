@@ -1,4 +1,5 @@
-// Specifique a Windows
+#pragma once
+
 #if _WIN32
 #include <Windows.h>
 #define FREEGLUT_LIB_PRAGMAS 0
@@ -9,18 +10,8 @@
 #endif
 
 #define GLEW_STATIC 1
-#include <GL/glew.h>
-
-// FreeGLUT
+#include "GL/glew.h"
 #include "GL/freeglut.h"
-
-#include <iostream> 
-#include <vector>
-#include "Spline.h"
+#include "common\EsgiShader.h"
+#include "OpenGLHelper.h"
 #include "OpenGLRenderer.h"
-
-int main(int argc, char* argv[])
-{
-    OpenGLRenderer renderer(argc,argv);
-    return 0;
-}
