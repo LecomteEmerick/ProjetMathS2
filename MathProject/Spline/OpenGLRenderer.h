@@ -1,6 +1,7 @@
 #pragma once
 #include "virtualOpenGL.h"
 #include "Point.h"
+//#include "Spline.h"
 
 #include <vector>
 
@@ -15,16 +16,14 @@ public:
 	void MouseWheelHandler(int button, int dir, int x, int y);
 	void IdleHandler();
 	void StartDisplay();
-	void AddElementToDraw(virtualOpenGl* element) { elementToDraw.push_back(element); }
+    static void OpenGLRenderer::AddElementToDraw(virtualOpenGl* element) { elementToDraw.push_back(element); }
 	~OpenGLRenderer();
 private:
 	void Initialize();
-	std::vector<virtualOpenGl*> elementToDraw;
-	GLuint terrainVBO;
-	GLuint terrainEBO;
+	static std::vector<virtualOpenGl*> elementToDraw;
 	EsgiShader basicShader;
-	GLdouble _angleY;
-	GLdouble _angleX;
+	GLdouble _angleY=0;
+	GLdouble _angleX=0;
 	float depth = -7.0f;
 	bool dragAction;
 	bool isPaused;

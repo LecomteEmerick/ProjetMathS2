@@ -15,3 +15,4 @@
 #include "common\EsgiShader.h"
 #include "OpenGLHelper.h"
 #include "OpenGLRenderer.h"
+#include "virtualOpenGL.h"
