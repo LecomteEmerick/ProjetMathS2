@@ -1,5 +1,11 @@
 #include "Spline.h"
 
+//1. #include "OpenGLRenderer.h" et #include "virtualOpenGL.h" dans le .h (a implementer sur ta partie)
+//2. class MaSuperClassPropre : public virtualOpenGl (a implementer sur ta partie)
+//3. construire l'EBO et le VBO comme indiqué si dessous (a implementer sur ta partie)
+//4. implémenter la classe draw (a implementer sur ta partie)
+//5. OpenGLRenderer::AddElementToDraw(this);
+
 Spline::Spline()
 {
     this->splineDegrees_ = 3;
@@ -11,15 +17,17 @@ Spline::Spline()
         //this->controlPoint.push_back(this->RandomPoint());
     construct();
     this->BindEbo();
+
+    //On ajout l'objet dans les éléments a dessiner (a implementer sur ta partie)
     OpenGLRenderer::AddElementToDraw(this);
 }
 
 Point Spline::RandomPoint()
 {
-    //srand(time(0));
     return Point(randFloat(-10, 10), randFloat(-10, 10), randFloat(-10, 10));
 }
 
+//creation de l'objet OpenGL (a implementer sur ta partie)
 void Spline::BindEbo()
 {
     this->vertex.clear();
@@ -80,6 +88,7 @@ Point Spline::DeBoor(int i, int degrees, Point t)
 
 }
 
+//fonction de dessin tu peux copier coller normalement si tu as bien fait les trucs avant (a implementer sur ta partie)
 void Spline::draw(GLuint program)
 {
     std::cout << "draw spline" << std::endl;
