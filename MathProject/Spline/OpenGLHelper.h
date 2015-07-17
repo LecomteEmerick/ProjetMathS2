@@ -13,7 +13,6 @@ public:
 	static void Perspective(float *matrix, float FOV, float width, float height, float N, float F);
 	static void Translate(float *matrix, float tx, float ty, float tz = 0.f);
 	static void OpenGLHelper::Rotate(float *mr, float *m, float angle, float x, float y, float z);
-private:
-	static float* OpenGLHelper::multiply(float* c, float* aa, float* bb);
+    static float* OpenGLHelper::multiply(float* c, float* aa, float* bb);
 };
 

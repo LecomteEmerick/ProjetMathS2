@@ -16,7 +16,6 @@
 
 #include <iostream> 
 #include <vector>
-#include "Spline.h"
 #include "OpenGLRenderer.h"
 
 int main(int argc, char* argv[])

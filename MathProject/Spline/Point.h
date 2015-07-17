@@ -10,6 +10,7 @@ public:
     Point operator*(float f){ return Point(this->x_ * f, this->y_ * f, this->z_ * f); }
     Point operator*(Point p){ return Point(this->x_ * p.x_, this->y_ * p.y_, this->z_ * p.z_); }
     Point operator+(Point p){ return Point(this->x_ + p.x_, this->y_ + p.y_, this->z_ + p.z_); }
+    void operator+=(Point p){ this->x_ += p.x_; this->y_ += p.y_; this->z_ += p.z_; }
     bool operator==(Point p){ if (this->x_ == p.x_ && this->y_ == p.y_ && this->z_ == p.z_) return true; return false; }
     Point operator-(Point p){ return Point(this->x_ - p.x_, this->y_ - p.y_, this->z_ - p.z_); }
     Point operator/(Point p){ return Point(this->x_ / p.x_, this->y_ / p.y_, this->z_ / p.z_); }

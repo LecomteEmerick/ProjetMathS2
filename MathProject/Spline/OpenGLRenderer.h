@@ -1,9 +1,9 @@
 #pragma once
-#include "virtualOpenGL.h"
-#include "Point.h"
-//#include "Spline.h"
-
 #include <vector>
+#include <algorithm>
+
+#include "virtualOpenGL.h"
+#include "SplineManager.h"
 
 class OpenGLRenderer
 {
@@ -17,16 +17,21 @@ public:
 	void IdleHandler();
 	void StartDisplay();
     static void OpenGLRenderer::AddElementToDraw(virtualOpenGl* element) { elementToDraw.push_back(element); }
+    static Point OpenGLRenderer::ProjectMouseClick(int x, int y);
 	~OpenGLRenderer();
 private:
-	void Initialize();
-	static std::vector<virtualOpenGl*> elementToDraw;
+    enum OpenGLRendererMode { EditMode, RenderMode };
+    //
+    void Initialize();
+    void SwitchMode(OpenGLRendererMode mode);
+    //
+    SplineManager splineManager;
+    OpenGLRendererMode currentMode = OpenGLRendererMode::RenderMode;
+    static std::vector<virtualOpenGl*> elementToDraw;
 	EsgiShader basicShader;
 	GLdouble _angleY=0;
 	GLdouble _angleX=0;
 	float depth = -7.0f;
 	bool dragAction;
-	bool isPaused;
-	bool isStepByStep;
 };
 

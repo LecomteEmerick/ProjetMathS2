@@ -1,11 +1,9 @@
 #include "OpenGLRenderer.h"
-#include "Spline.h"
 
 Point lastPoint;
 OpenGLRenderer* g_currentInstance;
 int previousTime = 0;
 std::vector<virtualOpenGl*> OpenGLRenderer::elementToDraw = std::vector<virtualOpenGl*>();
-std::vector<Spline*> splineElement;
 
 void _drawCallback()
 {
@@ -73,7 +71,7 @@ void OpenGLRenderer::Initialize()
 
 	previousTime = glutGet(GLUT_ELAPSED_TIME);
 
-    Spline* s = new Spline();
+    this->splineManager = SplineManager();
 
     depth = 10.0f * -2.0f  - 7.0f;
 }
@@ -119,11 +117,8 @@ void OpenGLRenderer::Render()
 	GLint worldLocation = glGetUniformLocation(program, "u_worldMatrix");
 	glUniformMatrix4fv(worldLocation, 1, GL_FALSE, worldTransform3);
 
-    int i = 0;
 	for (auto element : this->elementToDraw)
 	{
-        i++;
-        std::cout << "draw element " << i << std::endl;
 		element->draw(program);
 	}
 
@@ -134,15 +129,39 @@ void OpenGLRenderer::Render()
 
 void OpenGLRenderer::MouseHandler(int button, int state, int x, int y)
 {
-	if (button == GLUT_LEFT_BUTTON)
-	{
-		lastPoint.x_set(x);
-		lastPoint.y_set(y);
-		if (state == GLUT_DOWN)
-			dragAction = true;
-		else
-			dragAction = false;
-	}
+    if (currentMode == OpenGLRendererMode::RenderMode)
+    {
+        if (button == GLUT_LEFT_BUTTON)
+        {
+            lastPoint.x_set(x);
+            lastPoint.y_set(y);
+            if (state == GLUT_DOWN)
+                dragAction = true;
+            else
+                dragAction = false;
+        }
+    }
+    else{
+        this->splineManager.InputMouse(state, x, y);
+    }
+}
+
+void OpenGLRenderer::SwitchMode(OpenGLRendererMode mode)
+{
+    currentMode = mode;
+    switch (mode)
+    {
+        case OpenGLRendererMode::EditMode:
+            std::cout << "Edit Mode" << std::endl;
+            this->_angleX = 0;
+            this->_angleY = 0;
+            dragAction = false;
+            break;
+        case OpenGLRendererMode::RenderMode:
+            std::cout << "RenderMode" << std::endl;
+            break;
+    }
+    glutPostRedisplay();
 }
 
 void OpenGLRenderer::MotionHandler(int x, int y)
@@ -161,27 +180,63 @@ void OpenGLRenderer::MotionHandler(int x, int y)
 
 void OpenGLRenderer::KeyBoardHandler(unsigned char key, int x, int y)
 {
-    Spline* s;
 	switch (key)
 	{
-	case 'p' : //play pause
-        s = new Spline();
-        splineElement.push_back(s);
-        glutPostRedisplay();
+	case 'm' :
+        if (currentMode == OpenGLRendererMode::RenderMode)
+            this->SwitchMode(OpenGLRendererMode::EditMode);
+        else
+            this->SwitchMode(OpenGLRendererMode::RenderMode);
         break;
-	case 'n' : //mode pas a pas
-		this->isStepByStep = !isStepByStep;
-		break;
-	case 'm' : //pas suivant
-		this->isPaused = false;
-		break;
+    default:
+        if (currentMode == OpenGLRendererMode::EditMode)
+            this->splineManager.InputKey(key);
 	}
+    glutPostRedisplay();
 }
 
 void OpenGLRenderer::MouseWheelHandler(int button, int dir, int x, int y)
 {
-	depth += dir;
+	depth += dir*2;
 	glutPostRedisplay();
+}
+
+Point OpenGLRenderer::ProjectMouseClick(int x, int y)
+{
+    float matModelViewf[16], matProjectionf[16];
+    int viewport[16];
+
+    float w = (float)glutGet(GLUT_WINDOW_WIDTH);
+    float h = (float)glutGet(GLUT_WINDOW_HEIGHT);
+    OpenGLHelper::Perspective(matProjectionf, 45.f, w, h, 0.1f, 1000.f);
+
+    OpenGLHelper::Identity(matModelViewf);
+    matModelViewf[14] = g_currentInstance->depth;
+
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    double winX = (double)x;
+    double winY = viewport[3] - (double)y;
+
+    float matProjection[16];
+    OpenGLHelper::multiply(matProjection, matModelViewf, matProjectionf);
+    CMatrix4x4 matInverse = matProjection.inverse();
+    float in[4];
+    float winZ = 1.0;
+    in[0] = (2.0f*((float)(x - 0) / (w - 0))) - 1.0f,
+        in[1] = 1.0f - (2.0f*((float)(y - 0) / (h - 0)));
+    in[2] = 2.0* winZ - 1.0;
+    in[3] = 1.0;
+
+    float vIn[4] { in[0], in[1], in[2], in[3] };
+    pos = vIn * matInverse;
+
+    pos.w = 1.0 / pos.w;
+
+    pos.x *= pos.w;
+    pos.y *= pos.w;
+    pos.z *= pos.w;
+
+    return Point(0, 0);
 }
 
 OpenGLRenderer::~OpenGLRenderer()

@@ -1,6 +1,5 @@
 #include "OpenGLHelper.h"
 
-
 void OpenGLHelper::Identity(float *matrix)
 {
 	memset(matrix, 0, sizeof(float)* 16);
