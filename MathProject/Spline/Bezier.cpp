@@ -113,7 +113,7 @@ void Bezier::BindEbo()
 void Bezier::draw(GLuint program)
 {
 	glPointSize(5.0f);
-	if (this->curvesHoriz.size() > 0)
+	if (this->pointsToDraw.size() > 0)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, bezierVBO);
 
@@ -121,30 +121,62 @@ void Bezier::draw(GLuint program)
 		glEnableVertexAttribArray(positionLocation);
 		glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(float)* 3, 0);
 
-        glDrawArrays(GL_POINTS, 0, pointsToDraw.size());
+        glDrawArrays(GL_TRIANGLES, 0, pointsToDraw.size());
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bezierEBO);
-		glDrawElements(GL_LINES, this->indicesToDraw.size(), GL_UNSIGNED_SHORT, nullptr);
+		glDrawElements(GL_TRIANGLES, this->indicesToDraw.size(), GL_UNSIGNED_SHORT, nullptr);
+	}	
+	if (this->controlPointsToDraw.size() > 0)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, controlVBO);
+
+		GLint positionLocation = glGetAttribLocation(program, "a_position");
+		glEnableVertexAttribArray(positionLocation);
+		glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(float)* 3, 0);
+
+		glDrawArrays(GL_POINTS, 0, pointsToDraw.size());
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, controlEBO);
+		glDrawElements(GL_POINTS, this->indicesToDraw.size(), GL_UNSIGNED_SHORT, nullptr);
 	}
 }
 
 
+
+void Bezier::bindControlPoints()
+{
+	glGenBuffers(1, &controlVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, controlVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)* controlPointsToDraw.size(), &controlPointsToDraw.front(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenBuffers(1, &controlEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, controlEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short)* controlIndicesToDraw.size(), &controlIndicesToDraw.front(), GL_STATIC_DRAW);
+}
+
 Bezier::Bezier()
 {
-	OpenGLRenderer::AddElementToDraw(this);
+	//OpenGLRenderer::AddElementToDraw(this);
 	curvesHoriz = std::vector<std::unique_ptr<std::vector<Point>>>();
 	currentCurve = std::unique_ptr<std::vector<Point>>(new std::vector<Point>());
 	pointsToDraw = std::vector<float>();
 	indicesToDraw = std::vector<unsigned short>();
+	controlPointsToDraw = std::vector<float>();
+	controlIndicesToDraw = std::vector<unsigned short>();
 	createIndices();
 }
 
 void Bezier::addPoint(int x, int y)
 {
-	currentCurve->push_back(Point(x, y, -((rand() / 100) % 100)));
-    createNewCurve();
-    //createIndices();
-    computeCurve();
+	//float z = -((rand() / 100) % 100);
+	float z = 1.0f;
+	currentCurve->push_back(Point(x, y, z));
+	controlIndicesToDraw.push_back(controlPointsToDraw.size() / 3);
+	controlPointsToDraw.push_back(x);
+	controlPointsToDraw.push_back(y);
+	controlPointsToDraw.push_back(z);
+	bindControlPoints();
 }
 
 void Bezier::tryGetPoint(Point p)
@@ -177,6 +209,6 @@ void Bezier::ChangeSelectedPointPos(Point p)
 
 void Bezier::createNewCurve()
 {
-	curvesHoriz.push_back(std::move(currentCurve));
-	currentCurve = std::unique_ptr<std::vector<Point>>(new std::vector<Point>);
+	this->curvesHoriz.push_back(std::move(this->currentCurve));
+	this->currentCurve = std::unique_ptr<std::vector<Point>>(new std::vector<Point>);
 }

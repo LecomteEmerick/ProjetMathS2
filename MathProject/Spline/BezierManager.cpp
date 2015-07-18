@@ -25,7 +25,14 @@ void BezierManager::InputKey(unsigned char key)
         if (this->currentState == BezierManagerState::addPoint)
             this->currentState = BezierManagerState::editPoint;
         else
-            this->currentState = BezierManagerState::addPoint;
+			this->currentState = BezierManagerState::addPoint;
+		break;
+	case 'c':
+		this->currentBezier->computeCurve();
+		break;
+	case 'n':
+		this->currentBezier->createNewCurve();
+		break;
     }
 }
 

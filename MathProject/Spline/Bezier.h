@@ -20,12 +20,17 @@ public:
 private:
 	GLuint bezierEBO;
 	GLuint bezierVBO;
+	GLuint controlEBO;
+	GLuint controlVBO;
 	int step = 50.0;
 	std::vector<float> pointsToDraw;
 	std::vector<unsigned short> indicesToDraw;
+	std::vector<float> controlPointsToDraw;
+	std::vector<unsigned short> controlIndicesToDraw;
 	std::unique_ptr<std::vector<Point>> currentCurve;
 	std::vector<std::unique_ptr<std::vector<Point>>> curvesHoriz;
 
+	void bindControlPoints();
 	void createIndices();
 	void Bezier::BindEbo();
 	void draw(GLuint program);
