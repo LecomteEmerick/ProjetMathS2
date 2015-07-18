@@ -93,7 +93,7 @@ std::vector<Point*> Shape::BarycentreBase()
     this->barycentrePoint = this->Barycentre();
     for (Point p : this->ShapePoint)
     {
-        basePoint.push_back(&(p - this->barycentrePoint));
+        basePoint.push_back(new Point(p - this->barycentrePoint));
     }
     return basePoint;
 }

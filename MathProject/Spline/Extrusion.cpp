@@ -25,7 +25,7 @@ void Extrusion::Extrude(Spline sp, Shape sh)
         for (Point* ps : shape)
         {
             Point tmp;
-            tmp.x_set(p.z_get() + ps->z_get());
+            tmp.x_set(p.x_get());
             tmp.y_set(p.y_get() + ps->y_get());
             tmp.z_set(p.x_get() + ps->x_get());
             this->extrusionPoint.push_back(tmp);
@@ -38,20 +38,20 @@ void Extrusion::Bind()
     vertex.clear();
     for (Point p : this->extrusionPoint)
     {
-        vertex.push_back(p.z_get());
-        vertex.push_back(p.y_get());
         vertex.push_back(p.x_get());
+        vertex.push_back(p.y_get());
+        vertex.push_back(p.z_get());
     }
 
     indices.clear();
-    for (int i = 0; i < this->extrusionPoint.size() - this->shapeSize; i+=2)
+    for (int i = 0; i < this->extrusionPoint.size() - this->shapeSize; i++)
     {
         indices.push_back(i);
         indices.push_back(i + 1);
-        indices.push_back(i + shapeSize);
+        indices.push_back(i + shapeSize - 1);
         indices.push_back(i + 1);
-        indices.push_back(i + 1 + shapeSize);
         indices.push_back(i + shapeSize);
+        indices.push_back(i + shapeSize - 1);
     }
 
     glGenBuffers(1, &extrusionVBO);
