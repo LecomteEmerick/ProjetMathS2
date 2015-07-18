@@ -48,8 +48,8 @@ std::unique_ptr<std::vector<Point>> Bezier::computeBezierCurve(std::vector<Point
 		Point p = (getCasteljauPointIter(curve.size(), 0, (1.0 * t / step), curve, draw));
 		bezier->push_back(Point(p.x_get(), p.y_get(), p.z_get()));
 	}
-	int curveSizeMaxIndice = curve.size() - 1;
-	bezier->push_back(Point(curve[curveSizeMaxIndice].x_get(), curve[curveSizeMaxIndice].y_get(), curve[curveSizeMaxIndice].z_get()));
+	/*Point p = curve[curve.size() - 1];
+	bezier->push_back(p);*/
 	return bezier;
 }
 
@@ -83,17 +83,19 @@ void Bezier::computeCurve()
 }
 void Bezier::createIndices()
 {
-	for (int i = 0; i < step-1; i++)
+	int s = step + 1;
+	for (int i = 0; i < s; i++)
 	{
-		for (int j = 0; j < step-1; j++)
+		for (int j = 0; j < s; j++)
 		{
-			indicesToDraw.push_back(i + j*step); // LEFT DOWN
-			indicesToDraw.push_back(i + (j + 1)*step); // RIGHT DOWN
-			indicesToDraw.push_back(i + 1 + j*step); // LEFT UP
-
-			indicesToDraw.push_back(i + (j + 1)*step); // RIGHT DOWN
-			indicesToDraw.push_back(i + 1 + (j + 1)*step); // RIGHT UP
-			indicesToDraw.push_back(i + 1 + j*step); // LEFT UP
+			
+			indicesToDraw.push_back(i + j*s); // LEFT DOWN
+			indicesToDraw.push_back(i + (j + 1)*s); // RIGHT DOWN
+			indicesToDraw.push_back(i + 1 + j*s); // LEFT UP
+			
+			indicesToDraw.push_back(i + (j + 1)*s); // RIGHT DOWN
+			indicesToDraw.push_back(i + 1 + (j + 1)*s); // RIGHT UP
+			indicesToDraw.push_back(i + 1 + j*s); // LEFT UP
 		}
 	}
 }

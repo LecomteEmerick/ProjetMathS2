@@ -22,7 +22,7 @@ private:
 	GLuint bezierVBO;
 	GLuint controlEBO;
 	GLuint controlVBO;
-	int step = 50.0;
+	int step = 50;
 	std::vector<float> pointsToDraw;
 	std::vector<unsigned short> indicesToDraw;
 	std::vector<float> controlPointsToDraw;
