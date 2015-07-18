@@ -6,6 +6,7 @@
 #include "SplineManager.h"
 #include "ShapeManager.h"
 #include "ExtrusionManager.h"
+#include "BezierManager.h"
 
 class OpenGLRenderer
 {
@@ -23,7 +24,7 @@ public:
 	~OpenGLRenderer();
 private:
     enum OpenGLRendererMode { EditMode, RenderMode };
-    enum PolygonMode { SplineMode, ShapeMode };
+    enum PolygonMode { SplineMode, ShapeMode , BezierMode};
     //
     void Initialize();
     void SwitchMode(OpenGLRendererMode mode);
@@ -32,6 +33,7 @@ private:
     SplineManager splineManager;
     ShapeManager shapeManager;
     ExtrusionManager extrusionManager;
+    BezierManager bezierManager;
     //
     OpenGLRendererMode currentMode = OpenGLRendererMode::RenderMode;
     PolygonMode currentPolygonType = PolygonMode::ShapeMode;

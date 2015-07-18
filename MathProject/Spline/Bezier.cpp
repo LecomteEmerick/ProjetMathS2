@@ -1,4 +1,5 @@
 #include "Bezier.h"
+#include "OpenGLRenderer.h" 
 
 Point Bezier::getCasteljauPointIter(int r, int i, double t, std::vector<Point> points, bool draw) {
 	double* xTab = (double*)malloc(sizeof(double)*r*r);
@@ -55,7 +56,7 @@ std::unique_ptr<std::vector<Point>> Bezier::computeBezierCurve(std::vector<Point
 
 void Bezier::computeCurve()
 {
-	if (curvesHoriz.size > 0)
+	if (curvesHoriz.size() > 0)
 	{
 		std::vector<std::unique_ptr<std::vector<Point>>> bezierHoriz;
 		auto curvesHorizIterator = curvesHoriz.begin();
@@ -65,7 +66,7 @@ void Bezier::computeCurve()
 			curvesHorizIterator++;
 		}
 		pointsToDraw.clear();
-		indicesToDraw.clear();
+		//indicesToDraw.clear();
 		for (int i = 0; i < step + 1; i++)
 		{
 			std::vector<Point> curve = std::vector<Point>();
@@ -78,14 +79,13 @@ void Bezier::computeCurve()
 			computeBezierCurve(curve, true);
 		}
 		BindEbo();
-		draw();
 	}
 }
 void Bezier::createIndices()
 {
-	for (int i = 0; i < step; i++)
+	for (int i = 0; i < step-1; i++)
 	{
-		for (int j = 0; j < step; j++)
+		for (int j = 0; j < step-1; j++)
 		{
 			indicesToDraw.push_back(i + j*step); // LEFT DOWN
 			indicesToDraw.push_back(i + (j + 1)*step); // RIGHT DOWN
@@ -100,7 +100,7 @@ void Bezier::createIndices()
 
 void Bezier::BindEbo()
 {
-	glGenBuffers(1, &bezierEBO);
+	glGenBuffers(1, &bezierVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, bezierVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)* pointsToDraw.size(), &pointsToDraw.front(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -121,7 +121,7 @@ void Bezier::draw(GLuint program)
 		glEnableVertexAttribArray(positionLocation);
 		glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(float)* 3, 0);
 
-		glDrawArrays(GL_POINTS, 0, step * step);
+        glDrawArrays(GL_POINTS, 0, pointsToDraw.size());
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bezierEBO);
 		glDrawElements(GL_LINES, this->indicesToDraw.size(), GL_UNSIGNED_SHORT, nullptr);
@@ -142,6 +142,37 @@ Bezier::Bezier()
 void Bezier::addPoint(int x, int y)
 {
 	currentCurve->push_back(Point(x, y, -((rand() / 100) % 100)));
+    createNewCurve();
+    //createIndices();
+    computeCurve();
+}
+
+void Bezier::tryGetPoint(Point p)
+{
+    Point* nearestPoint = nullptr;
+    float dist;
+    float mindist = FLT_MAX;
+    for (int i = 0; i < this->currentCurve->size(); i++)
+    {
+        dist = p.distance(this->currentCurve->at(i));
+        if (dist < mindist)
+        {
+            nearestPoint = &this->currentCurve->at(i);
+            mindist = dist;
+        }
+    }
+
+    if (mindist < 0.5)
+        this->SelectedPoint = nearestPoint;
+}
+
+void Bezier::ChangeSelectedPointPos(Point p)
+{
+    this->SelectedPoint->x_set(p.x_get());
+    this->SelectedPoint->y_set(p.y_get());
+    this->SelectedPoint->z_set(p.z_get());
+    this->computeCurve();
+    this->SelectedPoint = nullptr;
 }
 
 void Bezier::createNewCurve()

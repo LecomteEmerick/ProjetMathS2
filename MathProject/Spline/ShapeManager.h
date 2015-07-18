@@ -10,7 +10,7 @@ public:
     void ShapeManager::CreateShape();
     void ShapeManager::InputKey(unsigned char key);
     void ShapeManager::InputMouse(int state, int x, int y);
-    void ShapeManager::SelectSpline(int index);
+    void ShapeManager::SelectShape(int index);
     Shape* ShapeManager::GetCurrentShape() { return this->currentShape; }
     ~ShapeManager();
 private:

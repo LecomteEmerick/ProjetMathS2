@@ -47,7 +47,7 @@ void ShapeManager::InputMouse(int state, int x, int y)
     }
 }
 
-void ShapeManager::SelectSpline(int index)
+void ShapeManager::SelectShape(int index)
 {
 
 }

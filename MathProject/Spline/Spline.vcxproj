@@ -68,6 +68,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bezier.cpp" />
+    <ClCompile Include="BezierManager.cpp" />
     <ClCompile Include="common\EsgiShader.cpp" />
     <ClCompile Include="Extrusion.cpp" />
     <ClCompile Include="ExtrusionManager.cpp" />
@@ -81,6 +83,8 @@
     <ClCompile Include="SplineManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bezier.h" />
+    <ClInclude Include="BezierManager.h" />
     <ClInclude Include="common\EsgiShader.h" />
     <ClInclude Include="Extrusion.h" />
     <ClInclude Include="ExtrusionManager.h" />

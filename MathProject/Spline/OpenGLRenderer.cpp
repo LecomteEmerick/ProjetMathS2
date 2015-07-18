@@ -147,6 +147,8 @@ void OpenGLRenderer::MouseHandler(int button, int state, int x, int y)
         {
             if (this->currentPolygonType == PolygonMode::SplineMode)
                 this->splineManager.InputMouse(state, x, y);
+            else if (this->currentPolygonType == PolygonMode::BezierMode)
+                this->bezierManager.InputMouse(state, x, y);
             else
                 this->shapeManager.InputMouse(state, x, y);
         }
@@ -212,8 +214,10 @@ void OpenGLRenderer::KeyBoardHandler(unsigned char key, int x, int y)
         {
             if (this->currentPolygonType == PolygonMode::ShapeMode)
                 this->SwitchPolygonType(PolygonMode::SplineMode);
-            else
+            else if (this->currentPolygonType == PolygonMode::BezierMode)
                 this->SwitchPolygonType(PolygonMode::ShapeMode);
+            else
+                this->SwitchPolygonType(PolygonMode::BezierMode);
         }
         break;
     case 'y':
@@ -228,6 +232,8 @@ void OpenGLRenderer::KeyBoardHandler(unsigned char key, int x, int y)
         {
             if (this->currentPolygonType == PolygonMode::SplineMode)
                 this->splineManager.InputKey(key);
+            else if (this->currentPolygonType == PolygonMode::BezierMode)
+                this->bezierManager.InputKey(key);
             else
                 this->shapeManager.InputKey(key);
         }
@@ -237,13 +243,21 @@ void OpenGLRenderer::KeyBoardHandler(unsigned char key, int x, int y)
 
 void OpenGLRenderer::SwitchPolygonType(PolygonMode type)
 {
-    if (type != PolygonMode::ShapeMode)
+    if (type == PolygonMode::SplineMode)
     {
+        std::cout << "Spline mode" << std::endl;
         this->currentPolygonType = PolygonMode::SplineMode;
         this->splineManager.CreateSpline();
     }
+    else if (type == PolygonMode::BezierMode)
+    {
+        std::cout << "Bezier mode" << std::endl;
+        this->currentPolygonType = PolygonMode::BezierMode;
+        this->bezierManager.CreateBezier();
+    }
     else
     {
+        std::cout << "Shape mode" << std::endl;
         this->currentPolygonType = PolygonMode::ShapeMode;
         this->shapeManager.CreateShape();
     }

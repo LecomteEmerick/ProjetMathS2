@@ -1,17 +1,22 @@
+#pragma once
 #include "Point.h"
 #include <vector>
 #include <stdlib.h>
 #include <iostream>
 #include <memory>
-#include "OpenGLRenderer.h" 
 #include "virtualOpenGL.h"
+
 class Bezier : public virtualOpenGl
 {
 public:
 	Bezier();
 	void computeCurve();
 	void addPoint(int x, int y);
+    void Bezier::tryGetPoint(Point p);
+    void Bezier::ChangeSelectedPointPos(Point p);
 	void createNewCurve();
+
+    Point* SelectedPoint;
 private:
 	GLuint bezierEBO;
 	GLuint bezierVBO;
