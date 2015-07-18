@@ -4,6 +4,8 @@
 
 #include "virtualOpenGL.h"
 #include "SplineManager.h"
+#include "ShapeManager.h"
+#include "ExtrusionManager.h"
 
 class OpenGLRenderer
 {
@@ -21,12 +23,18 @@ public:
 	~OpenGLRenderer();
 private:
     enum OpenGLRendererMode { EditMode, RenderMode };
+    enum PolygonMode { SplineMode, ShapeMode };
     //
     void Initialize();
     void SwitchMode(OpenGLRendererMode mode);
+    void SwitchPolygonType(PolygonMode type);
     //
     SplineManager splineManager;
+    ShapeManager shapeManager;
+    ExtrusionManager extrusionManager;
+    //
     OpenGLRendererMode currentMode = OpenGLRendererMode::RenderMode;
+    PolygonMode currentPolygonType = PolygonMode::ShapeMode;
     static std::vector<virtualOpenGl*> elementToDraw;
 	EsgiShader basicShader;
 	GLdouble _angleY=0;

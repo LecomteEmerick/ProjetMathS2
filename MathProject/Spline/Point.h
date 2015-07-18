@@ -15,12 +15,16 @@ public:
     Point operator-(Point p){ return Point(this->x_ - p.x_, this->y_ - p.y_, this->z_ - p.z_); }
     Point operator/(Point p){ return Point(this->x_ / p.x_, this->y_ / p.y_, this->z_ / p.z_); }
     bool operator>=(Point p){ return !(sqrt(this->x_ * this->x_ + this->y_ * this->y_ + this->z_ * this->z_) < sqrt(p.x_ * p.x_ + p.y_ * p.y_ + this->z_ * this->z_));}
+    void operator/=(int i){ this->x_ /= i; this->y_ /= i; this->z_ /= i; }
     float x_get() { return this->x_; }
     float y_get() { return this->y_; }
     void x_set(float newX) { this->x_ = newX; }
     void y_set(float newY) { this->y_ = newY; }
     float z_get() { return this->z_; }
     void z_set(float newZ) { this->z_ = newZ; }
+
+    float distance(Point p) { return sqrt((this->x_ - p.x_) * (this->x_ - p.x_) + (this->y_ - p.y_) * (this->y_ - p.y_)); }
+
     ~Point() {}
 private:
     float x_, y_, z_;

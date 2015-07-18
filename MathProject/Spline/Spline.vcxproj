@@ -69,19 +69,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common\EsgiShader.cpp" />
+    <ClCompile Include="Extrusion.cpp" />
+    <ClCompile Include="ExtrusionManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGLHelper.cpp" />
     <ClCompile Include="OpenGLRenderer.cpp" />
     <ClCompile Include="Point.cpp" />
+    <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="ShapeManager.cpp" />
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SplineManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\EsgiShader.h" />
+    <ClInclude Include="Extrusion.h" />
+    <ClInclude Include="ExtrusionManager.h" />
     <ClInclude Include="OpenGLHelper.h" />
     <ClInclude Include="OpenGLInclude.h" />
     <ClInclude Include="OpenGLRenderer.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Shape.h" />
+    <ClInclude Include="ShapeManager.h" />
     <ClInclude Include="Spline.h" />
     <ClInclude Include="SplineManager.h" />
     <ClInclude Include="virtualOpenGL.h" />

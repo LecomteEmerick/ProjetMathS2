@@ -1,5 +1,4 @@
 #include "Spline.h"
-#include "OpenGLRenderer.h"
 
 //1. #include "OpenGLRenderer.h" et #include "virtualOpenGL.h" dans le .h (a implementer sur ta partie)
 //2. class MaSuperClassPropre : public virtualOpenGl (a implementer sur ta partie)
@@ -15,6 +14,55 @@ Spline::Spline()
 Point Spline::RandomPoint()
 {
     return Point(randFloat(-10, 10), randFloat(-10, 10), randFloat(-10, 10));
+}
+
+void Spline::AddControlPoint(Point p) 
+{ 
+    this->controlPoint.push_back(p); 
+    this->BindEbo(this->indicesRefPoint, this->vertexRefPoint, this->refPointEBO, this->refPointVBO, this->controlPoint); 
+    this->renderRef = true; 
+    if (renderSpline)
+        construct();
+}
+
+void Spline::AddControlPoint(int x, int y) 
+{ 
+    this->controlPoint.push_back(Point(x, y)); 
+    this->BindEbo(this->indicesRefPoint, this->vertexRefPoint, this->refPointEBO, this->refPointVBO, this->controlPoint);
+    this->renderRef = true; 
+    if (renderSpline)
+        construct();
+}
+
+void Spline::tryGetPoint(Point p)
+{
+    Point* nearestPoint=nullptr;
+    float dist;
+    float mindist = FLT_MAX;
+    for (int i = 0; i < this->controlPoint.size();i++)
+    {
+        dist = p.distance(this->controlPoint.at(i));
+        if (dist < mindist)
+        {
+            nearestPoint = &this->controlPoint.at(i);
+            mindist = dist;
+        }
+    }
+
+    if (mindist < 0.5)
+        this->SelectedPoint = nearestPoint;
+}
+
+void Spline::ChangeSelectedPointPos(Point p)
+{
+    this->SelectedPoint->x_set(p.x_get());
+    this->SelectedPoint->y_set(p.y_get());
+    this->SelectedPoint->z_set(p.z_get());
+    this->BindEbo(this->indicesRefPoint, this->vertexRefPoint, this->refPointEBO, this->refPointVBO, this->controlPoint);
+    this->renderRef = true;
+    this->SelectedPoint = nullptr;
+    if (renderSpline)
+        construct();
 }
 
 //creation de l'objet OpenGL (a implementer sur ta partie)
@@ -44,12 +92,6 @@ void Spline::BindEbo(std::vector<unsigned short>& indices, std::vector<float>& v
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * indices.size(), &indices.front(), GL_STATIC_DRAW);
-
-    if (!isIncludeForRendering)
-    {
-        OpenGLRenderer::AddElementToDraw(this);
-        isIncludeForRendering = true;
-    }
 }
 
 void Spline::construct()
@@ -57,7 +99,7 @@ void Spline::construct()
     if (this->controlPoint.size() < this->splineDegrees_)
         return;
 
-    float step = 10;
+    float step = 5;
     std::vector<float> node;
     for (int i = 0; i < this->controlPoint.size() + this->splineDegrees_ + 1; ++i)
     {
@@ -102,11 +144,6 @@ float Spline::DeBoor(int i, int degrees, float t, std::vector<float>& node)
 
     return this->DeBoorHelper(i,degrees,t,node) * this->DeBoor(i, degrees - 1, t, node) +
         (1-this->DeBoorHelper(i+1,degrees,t,node)) * this->DeBoor(i + 1, degrees - 1, t, node);
-
-    /*return ((t - node.at(i)) /
-        (node.at(i + degrees) - node.at(i))) * this->DeBoor(i, degrees - 1, t, node) +
-        ((node.at(i + degrees + 1) - t) /
-        (node.at(i + degrees + 1) - node.at(i + 1))) * this->DeBoor(i + 1, degrees - 1, t, node);*/
 
 }
 

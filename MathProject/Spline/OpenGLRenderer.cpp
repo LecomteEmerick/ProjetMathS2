@@ -71,9 +71,10 @@ void OpenGLRenderer::Initialize()
 
 	previousTime = glutGet(GLUT_ELAPSED_TIME);
 
-    this->splineManager = SplineManager();
+    //this->splineManager = SplineManager();
+    //this->shapeManager = ShapeManager();
 
-    depth = 10.0f * -2.0f  - 7.0f;
+    depth = 10.0f * -2.0f  - 6.0f;
 }
 
 void OpenGLRenderer::Render()
@@ -142,8 +143,15 @@ void OpenGLRenderer::MouseHandler(int button, int state, int x, int y)
         }
     }
     else{
-        this->splineManager.InputMouse(state, x, y);
+        if (currentMode == OpenGLRendererMode::EditMode)
+        {
+            if (this->currentPolygonType == PolygonMode::SplineMode)
+                this->splineManager.InputMouse(state, x, y);
+            else
+                this->shapeManager.InputMouse(state, x, y);
+        }
     }
+    glutPostRedisplay();
 }
 
 void OpenGLRenderer::SwitchMode(OpenGLRendererMode mode)
@@ -178,21 +186,67 @@ void OpenGLRenderer::MotionHandler(int x, int y)
 	glutPostRedisplay();
 }
 
+/*
+m : change mode
+j : change polygon type
+//In edit mode :
+    a : add polygon
+    s : switch edit point / add Point
+*/
+
 void OpenGLRenderer::KeyBoardHandler(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
 	case 'm' :
         if (currentMode == OpenGLRendererMode::RenderMode)
+        {
             this->SwitchMode(OpenGLRendererMode::EditMode);
+            this->SwitchPolygonType(this->currentPolygonType);
+        }
         else
             this->SwitchMode(OpenGLRendererMode::RenderMode);
         break;
+    case 'j':
+        if (currentMode == OpenGLRendererMode::EditMode)
+        {
+            if (this->currentPolygonType == PolygonMode::ShapeMode)
+                this->SwitchPolygonType(PolygonMode::SplineMode);
+            else
+                this->SwitchPolygonType(PolygonMode::ShapeMode);
+        }
+        break;
+    case 'y':
+        if (this->shapeManager.GetCurrentShape() != nullptr && this->splineManager.GetCurrentSpline() != nullptr)
+        {
+            this->extrusionManager.CreateExtrusion(*this->splineManager.GetCurrentSpline(), *this->shapeManager.GetCurrentShape());
+            glutPostRedisplay();
+        }
+        break;
     default:
         if (currentMode == OpenGLRendererMode::EditMode)
-            this->splineManager.InputKey(key);
+        {
+            if (this->currentPolygonType == PolygonMode::SplineMode)
+                this->splineManager.InputKey(key);
+            else
+                this->shapeManager.InputKey(key);
+        }
 	}
     glutPostRedisplay();
+}
+
+void OpenGLRenderer::SwitchPolygonType(PolygonMode type)
+{
+    if (type != PolygonMode::ShapeMode)
+    {
+        this->currentPolygonType = PolygonMode::SplineMode;
+        this->splineManager.CreateSpline();
+    }
+    else
+    {
+        this->currentPolygonType = PolygonMode::ShapeMode;
+        this->shapeManager.CreateShape();
+    }
 }
 
 void OpenGLRenderer::MouseWheelHandler(int button, int dir, int x, int y)
@@ -203,40 +257,18 @@ void OpenGLRenderer::MouseWheelHandler(int button, int dir, int x, int y)
 
 Point OpenGLRenderer::ProjectMouseClick(int x, int y)
 {
-    float matModelViewf[16], matProjectionf[16];
-    int viewport[16];
-
+    float united = (g_currentInstance->depth+6.0) / -2.0;
     float w = (float)glutGet(GLUT_WINDOW_WIDTH);
     float h = (float)glutGet(GLUT_WINDOW_HEIGHT);
-    OpenGLHelper::Perspective(matProjectionf, 45.f, w, h, 0.1f, 1000.f);
 
-    OpenGLHelper::Identity(matModelViewf);
-    matModelViewf[14] = g_currentInstance->depth;
+    int min = std::min<float>(w,h);
+    int centerW = w / 2;
+    int centerH = h / 2;
+    float oneSegment = (min/2) / united;
 
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    double winX = (double)x;
-    double winY = viewport[3] - (double)y;
+    Point p((centerW - x)/-oneSegment, (centerH - (h-y))/-oneSegment);
 
-    float matProjection[16];
-    OpenGLHelper::multiply(matProjection, matModelViewf, matProjectionf);
-    CMatrix4x4 matInverse = matProjection.inverse();
-    float in[4];
-    float winZ = 1.0;
-    in[0] = (2.0f*((float)(x - 0) / (w - 0))) - 1.0f,
-        in[1] = 1.0f - (2.0f*((float)(y - 0) / (h - 0)));
-    in[2] = 2.0* winZ - 1.0;
-    in[3] = 1.0;
-
-    float vIn[4] { in[0], in[1], in[2], in[3] };
-    pos = vIn * matInverse;
-
-    pos.w = 1.0 / pos.w;
-
-    pos.x *= pos.w;
-    pos.y *= pos.w;
-    pos.z *= pos.w;
-
-    return Point(0, 0);
+    return p;
 }
 
 OpenGLRenderer::~OpenGLRenderer()
