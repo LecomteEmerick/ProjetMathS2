@@ -33,6 +33,15 @@ void BezierManager::InputKey(unsigned char key)
 	case 'n':
 		this->currentBezier->createNewCurve();
 		break;
+	case '+':
+		this->currentBezier->upStep();
+		break;
+	case '-':
+		this->currentBezier->downStep();
+		break;
+	case 'w':
+		this->currentBezier->toggleWireframe();
+		break;
     }
 }
 

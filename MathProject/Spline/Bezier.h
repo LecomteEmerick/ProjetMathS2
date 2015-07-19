@@ -15,24 +15,31 @@ public:
     void Bezier::tryGetPoint(Point p);
     void Bezier::ChangeSelectedPointPos(Point p);
 	void createNewCurve();
+	void upStep();
+	void downStep();
+	void toggleWireframe();
 
     Point* SelectedPoint;
 private:
-	GLuint bezierEBO;
-	GLuint bezierVBO;
-	GLuint controlEBO;
-	GLuint controlVBO;
-	int step = 50;
-	std::vector<float> pointsToDraw;
-	std::vector<unsigned short> indicesToDraw;
-	std::vector<float> controlPointsToDraw;
-	std::vector<unsigned short> controlIndicesToDraw;
+	int step = 2;
+	bool wireframe;
 	std::unique_ptr<std::vector<Point>> currentCurve;
 	std::vector<std::unique_ptr<std::vector<Point>>> curvesHoriz;
+	std::vector<float> pointsToDraw;
+	std::vector<unsigned short> indicesToDraw;
+	std::vector<unsigned short> wireframeIndicesToDraw;
+	std::vector<float> controlPointsToDraw;
+	std::vector<unsigned short> controlIndicesToDraw;
+	GLuint bezierEBO;
+	GLuint bezierWireFrameEBO;
+	GLuint bezierVBO;
+	GLuint controlEBO;
+	GLuint controlVBO; 
 
 	void bindControlPoints();
 	void createIndices();
 	void Bezier::BindEbo();
+	void Bezier::BindVbo();
 	void draw(GLuint program);
 	std::unique_ptr<std::vector<Point>> computeBezierCurve(std::vector<Point> curve, bool draw);
 	Point getCasteljauPointIter(int r, int i, double t, std::vector<Point> points, bool draw);

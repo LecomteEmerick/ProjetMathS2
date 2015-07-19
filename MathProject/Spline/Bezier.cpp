@@ -29,7 +29,6 @@ Point Bezier::getCasteljauPointIter(int r, int i, double t, std::vector<Point> p
 		pointsToDraw.push_back(xTab[r*(r - 1)]);
 		pointsToDraw.push_back(yTab[r*(r - 1)]);
 		pointsToDraw.push_back(zTab[r*(r - 1)]);
-		std::cout << xTab[r*(r - 1)] << " : " << yTab[r*(r - 1)] << " : " << zTab[r*(r - 1)] << std::endl;
 	}
 	Point p(xTab[r*(r - 1)], yTab[r*(r - 1)], zTab[r*(r - 1)]);
 	free(zTab);
@@ -48,8 +47,6 @@ std::unique_ptr<std::vector<Point>> Bezier::computeBezierCurve(std::vector<Point
 		Point p = (getCasteljauPointIter(curve.size(), 0, (1.0 * t / step), curve, draw));
 		bezier->push_back(Point(p.x_get(), p.y_get(), p.z_get()));
 	}
-	/*Point p = curve[curve.size() - 1];
-	bezier->push_back(p);*/
 	return bezier;
 }
 
@@ -66,7 +63,6 @@ void Bezier::computeCurve()
 			curvesHorizIterator++;
 		}
 		pointsToDraw.clear();
-		//indicesToDraw.clear();
 		for (int i = 0; i < step + 1; i++)
 		{
 			std::vector<Point> curve = std::vector<Point>();
@@ -78,38 +74,73 @@ void Bezier::computeCurve()
 			}
 			computeBezierCurve(curve, true);
 		}
-		BindEbo();
+		BindVbo();
 	}
 }
 void Bezier::createIndices()
 {
+	indicesToDraw.clear();
+	wireframeIndicesToDraw.clear();
 	int s = step + 1;
-	for (int i = 0; i < s; i++)
+	for (int i = 0; i < step; i++)
 	{
-		for (int j = 0; j < s; j++)
+		for (int j = 0; j < step; j++)
 		{
-			
+			/************** FACES **************/
+			/* DOWN FACE */
 			indicesToDraw.push_back(i + j*s); // LEFT DOWN
 			indicesToDraw.push_back(i + (j + 1)*s); // RIGHT DOWN
 			indicesToDraw.push_back(i + 1 + j*s); // LEFT UP
-			
+
+			/* UP FACE */
 			indicesToDraw.push_back(i + (j + 1)*s); // RIGHT DOWN
 			indicesToDraw.push_back(i + 1 + (j + 1)*s); // RIGHT UP
 			indicesToDraw.push_back(i + 1 + j*s); // LEFT UP
+
+			/************** WIREFRAME **************/
+			wireframeIndicesToDraw.push_back(i + j*s); // LEFT DOWN
+			wireframeIndicesToDraw.push_back(i + (j + 1)*s); // RIGHT DOWN
+			wireframeIndicesToDraw.push_back(i + (j + 1)*s); // RIGHT DOWN
+			wireframeIndicesToDraw.push_back(i + 1 + j*s); // LEFT UP
+			wireframeIndicesToDraw.push_back(i + 1 + j*s); // LEFT UP
+			wireframeIndicesToDraw.push_back(i + j*s); // LEFT DOWN
+			wireframeIndicesToDraw.push_back(i + (j + 1)*s); // RIGHT DOWN
+			wireframeIndicesToDraw.push_back(i + 1 + (j + 1)*s); // RIGHT UP
+			wireframeIndicesToDraw.push_back(i + 1 + (j + 1)*s); // RIGHT UP
+			wireframeIndicesToDraw.push_back(i + 1 + j*s); // LEFT UP
 		}
 	}
 }
 
-void Bezier::BindEbo()
+void Bezier::toggleWireframe()
+{
+	wireframe = !wireframe;
+	BindEbo();
+}
+
+
+void Bezier::BindVbo()
 {
 	glGenBuffers(1, &bezierVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, bezierVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)* pointsToDraw.size(), &pointsToDraw.front(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glGenBuffers(1, &bezierEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bezierEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short)* indicesToDraw.size(), &indicesToDraw.front(), GL_STATIC_DRAW);
+	BindEbo();
+}
+void Bezier::BindEbo()
+{
+	if (wireframe)
+	{
+		glGenBuffers(1, &bezierWireFrameEBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bezierWireFrameEBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short)* wireframeIndicesToDraw.size(), &wireframeIndicesToDraw.front(), GL_STATIC_DRAW);
+	}
+	else
+	{
+		glGenBuffers(1, &bezierEBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bezierEBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short)* indicesToDraw.size(), &indicesToDraw.front(), GL_STATIC_DRAW);
+	}
 }
 
 void Bezier::draw(GLuint program)
@@ -117,17 +148,26 @@ void Bezier::draw(GLuint program)
 	glPointSize(5.0f);
 	if (this->pointsToDraw.size() > 0)
 	{
+		GLint mode = GL_TRIANGLES;
+		GLint ebo = bezierEBO;
+		int nbToDraw = this->indicesToDraw.size();
+		if (wireframe)
+		{
+			mode = GL_LINES;
+			nbToDraw = this->wireframeIndicesToDraw.size();
+			ebo = bezierWireFrameEBO;
+		}
 		glBindBuffer(GL_ARRAY_BUFFER, bezierVBO);
 
 		GLint positionLocation = glGetAttribLocation(program, "a_position");
 		glEnableVertexAttribArray(positionLocation);
 		glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(float)* 3, 0);
 
-        glDrawArrays(GL_TRIANGLES, 0, pointsToDraw.size());
+		glDrawArrays(GL_POINTS, 0, pointsToDraw.size());
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bezierEBO);
-		glDrawElements(GL_TRIANGLES, this->indicesToDraw.size(), GL_UNSIGNED_SHORT, nullptr);
-	}	
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glDrawElements(mode, nbToDraw, GL_UNSIGNED_SHORT, nullptr);
+	}
 	if (this->controlPointsToDraw.size() > 0)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, controlVBO);
@@ -139,7 +179,7 @@ void Bezier::draw(GLuint program)
 		glDrawArrays(GL_POINTS, 0, pointsToDraw.size());
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, controlEBO);
-		glDrawElements(GL_POINTS, this->indicesToDraw.size(), GL_UNSIGNED_SHORT, nullptr);
+		glDrawElements(GL_POINTS, this->controlIndicesToDraw.size(), GL_UNSIGNED_SHORT, nullptr);
 	}
 }
 
@@ -159,19 +199,19 @@ void Bezier::bindControlPoints()
 
 Bezier::Bezier()
 {
-	//OpenGLRenderer::AddElementToDraw(this);
 	curvesHoriz = std::vector<std::unique_ptr<std::vector<Point>>>();
 	currentCurve = std::unique_ptr<std::vector<Point>>(new std::vector<Point>());
 	pointsToDraw = std::vector<float>();
 	indicesToDraw = std::vector<unsigned short>();
+	wireframeIndicesToDraw = std::vector<unsigned short>();
 	controlPointsToDraw = std::vector<float>();
 	controlIndicesToDraw = std::vector<unsigned short>();
 	createIndices();
+	wireframe = false;
 }
 
 void Bezier::addPoint(int x, int y)
 {
-	//float z = -((rand() / 100) % 100);
 	float z = 1.0f;
 	currentCurve->push_back(Point(x, y, z));
 	controlIndicesToDraw.push_back(controlPointsToDraw.size() / 3);
@@ -213,4 +253,18 @@ void Bezier::createNewCurve()
 {
 	this->curvesHoriz.push_back(std::move(this->currentCurve));
 	this->currentCurve = std::unique_ptr<std::vector<Point>>(new std::vector<Point>);
+}
+
+void Bezier::upStep()
+{
+	step++;
+	createIndices();
+	computeCurve();
+}
+void Bezier::downStep()
+{
+	if (step >1)
+		step--;
+	createIndices();
+	computeCurve();
 }
