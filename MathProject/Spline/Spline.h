@@ -37,7 +37,7 @@ private:
     float Spline::DeBoor(int i, int degrees, float t, std::vector<float>& node);
     float Spline::DeBoorHelper(int i, int degrees, float t, std::vector<float>& node);
     int splineDegrees_;
-    bool extrapoolExtremity = false;
+    bool extrapoolExtremity = true;
 
     std::vector<Point> controlPoint;
     std::vector<Point> b_spline;

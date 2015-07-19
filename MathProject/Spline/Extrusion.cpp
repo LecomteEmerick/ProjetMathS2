@@ -35,6 +35,9 @@ void Extrusion::Extrude(Spline sp, Shape sh)
 
 void Extrusion::Bind()
 {
+    if (this->extrusionPoint.size() < this->shapeSize * 2)
+        return;
+
     vertex.clear();
     for (Point p : this->extrusionPoint)
     {
@@ -44,15 +47,22 @@ void Extrusion::Bind()
     }
 
     indices.clear();
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(2);
     for (int i = 0; i < this->extrusionPoint.size() - this->shapeSize; i++)
     {
+        indices.push_back(i + shapeSize);
+        indices.push_back(i + 1);
         indices.push_back(i);
-        indices.push_back(i + 1);
+        
         indices.push_back(i + shapeSize);
-        indices.push_back(i + 1);
         indices.push_back(i + shapeSize + 1);
-        indices.push_back(i + shapeSize);
+        indices.push_back(i + 1);
     }
+    indices.push_back(this->extrusionPoint.size() - 3);
+    indices.push_back(this->extrusionPoint.size() - 2);
+    indices.push_back(this->extrusionPoint.size() - 1);
 
     if (vertex.size() < 1 || indices.size() < 1)
         return;
