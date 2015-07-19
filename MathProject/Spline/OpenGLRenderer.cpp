@@ -30,6 +30,9 @@ void _keypressCallback(unsigned char key, int x, int y)
 	g_currentInstance->KeyBoardHandler(key, x, y);
 }
 
+void OpenGLRenderer::ForceFrontView() { g_currentInstance->_angleY = 0; }
+void OpenGLRenderer::ForceSideView() { g_currentInstance->_angleY = 90; }
+
 OpenGLRenderer::OpenGLRenderer(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
@@ -51,6 +54,9 @@ OpenGLRenderer::OpenGLRenderer(int argc, char* argv[])
 	glutMotionFunc(_motionCallback);
 	glutDisplayFunc(_drawCallback);
 	glutKeyboardFunc(_keypressCallback);
+
+    this->r = new Repere();
+    this->AddElementToDraw(this->r);
 
     glutMainLoop();
 }
@@ -227,6 +233,8 @@ void OpenGLRenderer::KeyBoardHandler(unsigned char key, int x, int y)
             glutPostRedisplay();
         }
         break;
+    case '0':
+        this->r->showRepere = !this->r->showRepere;
     default:
         if (currentMode == OpenGLRendererMode::EditMode)
         {

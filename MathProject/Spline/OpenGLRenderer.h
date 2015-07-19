@@ -7,6 +7,7 @@
 #include "ShapeManager.h"
 #include "ExtrusionManager.h"
 #include "BezierManager.h"
+#include "Repere.h"
 
 class OpenGLRenderer
 {
@@ -19,6 +20,8 @@ public:
 	void MouseWheelHandler(int button, int dir, int x, int y);
 	void IdleHandler();
 	void StartDisplay();
+    static void ForceFrontView();
+    static void ForceSideView();
     static void OpenGLRenderer::AddElementToDraw(virtualOpenGl* element) { elementToDraw.push_back(element); }
     static Point OpenGLRenderer::ProjectMouseClick(int x, int y);
 	~OpenGLRenderer();
@@ -43,5 +46,7 @@ private:
 	GLdouble _angleX=0;
 	float depth = -7.0f;
 	bool dragAction;
+
+    Repere* r;
 };
 

@@ -7,7 +7,6 @@ BezierManager::BezierManager()
 
 void BezierManager::CreateBezier()
 {
-    std::cout << "add bezier" << std::endl;
     if (this->currentBezier != nullptr)
         this->currentBezier->myColor = this->DisableColor;
     this->bezierList.push_back(new Bezier());
@@ -65,9 +64,18 @@ void BezierManager::InputMouse(int state, int x, int y)
 
     if (this->currentState == BezierManagerState::addPoint)
     {
-        std::cout << "add point" << std::endl;
-        Point worldPoint = OpenGLRenderer::ProjectMouseClick(x, y);
-        this->currentBezier->addPoint(worldPoint.x_get(), worldPoint.y_get());
+        if (!waitForSecondeClick)
+        {
+            this->worldPoint = OpenGLRenderer::ProjectMouseClick(x, y);
+            waitForSecondeClick = true;
+            OpenGLRenderer::ForceSideView();
+        }
+        else{
+            Point tmp = OpenGLRenderer::ProjectMouseClick(x, y);
+            this->currentBezier->addPoint(worldPoint.x_get(), worldPoint.y_get(), tmp.x_get()); 
+            waitForSecondeClick = false;
+            OpenGLRenderer::ForceFrontView();
+        }
     }
     else{
         if (this->currentBezier->SelectedPoint == nullptr)

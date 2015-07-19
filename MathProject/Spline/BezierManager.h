@@ -19,5 +19,7 @@ private:
     CustomColor ActiveColor = CustomColor(1.0, 0.0, 0.0);
     CustomColor DisableColor = CustomColor(0.0, 0.0, 1.0);
     int selectedBezierIndex = 0;
+    Point worldPoint;
+    bool waitForSecondeClick;
 };
 

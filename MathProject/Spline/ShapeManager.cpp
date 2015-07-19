@@ -7,7 +7,6 @@ ShapeManager::ShapeManager()
 
 void ShapeManager::CreateShape()
 {
-    std::cout << "add shape" << std::endl;
     if (this->currentShape != nullptr)
         this->currentShape->myColor = DisableColor;
     this->shapeList.push_back(new Shape());

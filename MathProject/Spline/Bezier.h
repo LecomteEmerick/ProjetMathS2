@@ -12,7 +12,7 @@ class Bezier : public virtualOpenGl
 public:
 	Bezier();
 	void computeCurve();
-	void addPoint(int x, int y);
+    void Bezier::addPoint(float x, float y, float z);
     void Bezier::tryGetPoint(Point p);
     void Bezier::ChangeSelectedPointPos(Point p);
 	void createNewCurve();

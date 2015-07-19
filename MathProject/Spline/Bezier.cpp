@@ -216,9 +216,9 @@ Bezier::Bezier()
 	wireframe = false;
 }
 
-void Bezier::addPoint(int x, int y)
+void Bezier::addPoint(float x, float y,float z)
 {
-	float z = 1.0f;
+	//float z = 1.0f;
 	currentCurve->push_back(Point(x, y, z));
 	controlIndicesToDraw.push_back(controlPointsToDraw.size() / 3);
 	controlPointsToDraw.push_back(x);

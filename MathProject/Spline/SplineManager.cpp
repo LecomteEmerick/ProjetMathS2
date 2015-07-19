@@ -8,7 +8,6 @@ SplineManager::SplineManager()
 
 void SplineManager::CreateSpline()
 {
-    std::cout << "add spline" << std::endl;
     if (this->currentActiveSpline != nullptr)
         this->currentActiveSpline->myColor = DisableColor;
     this->currentActiveSpline = new Spline();
