@@ -15,6 +15,12 @@ public:
     ~ShapeManager();
 private:
     enum ShapeManagerState { editPoint, addPoint };
+
+    int selectedShapeIndex = 0;
+
+    CustomColor ActiveColor = CustomColor(1.0, 0.0, 0.0);
+    CustomColor DisableColor = CustomColor(0.0, 1.0, 0.0);
+
     ShapeManagerState currentState = ShapeManagerState::addPoint;
     Shape* currentShape;
     std::vector<Shape*> shapeList;

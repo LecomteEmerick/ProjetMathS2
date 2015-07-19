@@ -3,12 +3,16 @@
 #include <vector>
 #include <algorithm>
 #include <ctime>
+
 #include "Point.h"
 #include "OpenGLInclude.h"
+#include "CustomColor.h"
 
 class Spline : public virtualOpenGl
 {
 public:
+    CustomColor myColor;
+
     Spline();
     Point Spline::RandomPoint();
     Spline(int splineDegrees) {this->splineDegrees_ = splineDegrees;}
@@ -33,7 +37,7 @@ private:
     float Spline::DeBoor(int i, int degrees, float t, std::vector<float>& node);
     float Spline::DeBoorHelper(int i, int degrees, float t, std::vector<float>& node);
     int splineDegrees_;
-    bool extrapoolExtremity = true;
+    bool extrapoolExtremity = false;
 
     std::vector<Point> controlPoint;
     std::vector<Point> b_spline;

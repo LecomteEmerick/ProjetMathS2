@@ -9,9 +9,13 @@ SplineManager::SplineManager()
 void SplineManager::CreateSpline()
 {
     std::cout << "add spline" << std::endl;
+    if (this->currentActiveSpline != nullptr)
+        this->currentActiveSpline->myColor = DisableColor;
     this->currentActiveSpline = new Spline();
+    this->currentActiveSpline->myColor = ActiveColor;
     OpenGLRenderer::AddElementToDraw(this->currentActiveSpline);
     this->SplineList.push_back(this->currentActiveSpline);
+    selectedSplineIndex = this->SplineList.size() - 1;
     currentState = SplineManagerState::addPoint;
 }
 
@@ -30,6 +34,17 @@ void SplineManager::InputKey(unsigned char key)
             this->currentState = SplineManagerState::editPoint;
         else
             this->currentState = SplineManagerState::addPoint;
+        break;
+    case '+':
+        this->selectedSplineIndex++;
+        this->selectedSplineIndex = this->selectedSplineIndex % this->SplineList.size();
+        this->SelectSpline(this->selectedSplineIndex);
+        break;
+    case '-':
+        this->selectedSplineIndex--;
+        this->selectedSplineIndex = this->selectedSplineIndex % this->SplineList.size();
+        this->SelectSpline(this->selectedSplineIndex);
+        break;
     }
 }
 
@@ -53,9 +68,14 @@ void SplineManager::InputMouse(int state, int x, int y)
 
 void SplineManager::SelectSpline(int index)
 {
-
+    this->currentState = SplineManagerState::editPoint;
+    this->currentActiveSpline->myColor = DisableColor;
+    this->currentActiveSpline = this->SplineList.at(index);
+    this->currentActiveSpline->myColor = ActiveColor;
 }
 
 SplineManager::~SplineManager()
 {
+    for (Spline* s : this->SplineList)
+        delete s;
 }

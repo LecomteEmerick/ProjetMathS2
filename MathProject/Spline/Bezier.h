@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include "virtualOpenGL.h"
+#include "CustomColor.h"
 
 class Bezier : public virtualOpenGl
 {
@@ -16,6 +17,8 @@ public:
     void Bezier::ChangeSelectedPointPos(Point p);
 	void createNewCurve();
 
+
+    CustomColor myColor;
     Point* SelectedPoint;
 private:
 	GLuint bezierEBO;
@@ -36,6 +39,4 @@ private:
 	void draw(GLuint program);
 	std::unique_ptr<std::vector<Point>> computeBezierCurve(std::vector<Point> curve, bool draw);
 	Point getCasteljauPointIter(int r, int i, double t, std::vector<Point> points, bool draw);
-
-
 };

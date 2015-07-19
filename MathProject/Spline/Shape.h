@@ -3,11 +3,13 @@
 
 #include "OpenGLInclude.h"
 #include "Point.h"
+#include "CustomColor.h"
 
 class Shape : public virtualOpenGl
 {
 public:
     Point* SelectedPoint=nullptr;
+    CustomColor myColor;
 
     Shape();
     void Shape::AddPoint(Point p);

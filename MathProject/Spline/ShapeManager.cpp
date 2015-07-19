@@ -8,8 +8,11 @@ ShapeManager::ShapeManager()
 void ShapeManager::CreateShape()
 {
     std::cout << "add shape" << std::endl;
+    if (this->currentShape != nullptr)
+        this->currentShape->myColor = DisableColor;
     this->shapeList.push_back(new Shape());
     this->currentShape = this->shapeList.back();
+    this->currentShape->myColor = ActiveColor;
     OpenGLRenderer::AddElementToDraw(this->shapeList.back());
     currentState = ShapeManagerState::addPoint;
 }
@@ -26,6 +29,17 @@ void ShapeManager::InputKey(unsigned char key)
                 this->currentState = ShapeManagerState::editPoint;
             else
                 this->currentState = ShapeManagerState::addPoint;
+            break;
+        case '+':
+            this->selectedShapeIndex++;
+            this->selectedShapeIndex = this->selectedShapeIndex % this->shapeList.size();
+            this->SelectShape(this->selectedShapeIndex);
+            break;
+        case '-':
+            this->selectedShapeIndex--;
+            this->selectedShapeIndex = this->selectedShapeIndex % this->shapeList.size();
+            this->SelectShape(this->selectedShapeIndex);
+            break;
     }
 }
 
@@ -49,9 +63,14 @@ void ShapeManager::InputMouse(int state, int x, int y)
 
 void ShapeManager::SelectShape(int index)
 {
-
+    this->currentState = ShapeManagerState::editPoint;
+    this->currentShape->myColor = DisableColor;
+    this->currentShape = this->shapeList.at(index);
+    this->currentShape->myColor = ActiveColor;
 }
 
 ShapeManager::~ShapeManager()
 {
+    for (Shape* s : this->shapeList)
+        delete s;
 }

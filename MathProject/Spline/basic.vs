@@ -1,5 +1,6 @@
 
 attribute vec4 a_position;
+uniform vec4 u_color;
 
 uniform mat4 u_projectionMatrix;
 uniform mat4 u_viewMatrix;
@@ -21,5 +22,6 @@ void main(void)
 	normal = mat3(u_worldMatrix) * normal;
 	v_normal = normal;
 
-	v_color = vec4(1.0, 0.0, 0.0, 1.0);
+	v_color = u_color;
+	//v_color = vec4(1.0, 0.0, 0.0, 1.0);
 }
