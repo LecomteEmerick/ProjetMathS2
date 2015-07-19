@@ -59,6 +59,8 @@ void Repere::draw(GLuint program)
 {
     if (!this->showRepere)
         return;
+    glPointSize(5.0f);
+
     glBindBuffer(GL_ARRAY_BUFFER, repereXVBO);
 
     GLint positionLocationX = glGetAttribLocation(program, "a_position");
