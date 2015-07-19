@@ -166,7 +166,10 @@ void Bezier::draw(GLuint program)
         GLint colorLocation = glGetUniformLocation(program, "u_color");
         glUniform4f(colorLocation, this->myColor.RedValue, this->myColor.GreenValue, this->myColor.BlueValue, 1.0f);
 
-		glDrawArrays(GL_POINTS, 0, pointsToDraw.size());
+		if (wireframe)
+		{
+			glDrawArrays(GL_POINTS, 0, pointsToDraw.size());
+		}
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glDrawElements(mode, nbToDraw, GL_UNSIGNED_SHORT, nullptr);
