@@ -71,6 +71,7 @@
     <ClCompile Include="Bezier.cpp" />
     <ClCompile Include="BezierManager.cpp" />
     <ClCompile Include="common\EsgiShader.cpp" />
+    <ClCompile Include="CustomColor.cpp" />
     <ClCompile Include="Extrusion.cpp" />
     <ClCompile Include="ExtrusionManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -86,6 +87,7 @@
     <ClInclude Include="Bezier.h" />
     <ClInclude Include="BezierManager.h" />
     <ClInclude Include="common\EsgiShader.h" />
+    <ClInclude Include="CustomColor.h" />
     <ClInclude Include="Extrusion.h" />
     <ClInclude Include="ExtrusionManager.h" />
     <ClInclude Include="OpenGLHelper.h" />

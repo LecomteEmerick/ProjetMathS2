@@ -8,8 +8,11 @@ BezierManager::BezierManager()
 void BezierManager::CreateBezier()
 {
     std::cout << "add bezier" << std::endl;
+    if (this->currentBezier != nullptr)
+        this->currentBezier->myColor = this->DisableColor;
     this->bezierList.push_back(new Bezier());
     this->currentBezier = this->bezierList.back();
+    this->currentBezier->myColor = this->ActiveColor;
     OpenGLRenderer::AddElementToDraw(this->bezierList.back());
     currentState = BezierManagerState::addPoint;
 }
@@ -33,15 +36,25 @@ void BezierManager::InputKey(unsigned char key)
 	case 'n':
 		this->currentBezier->createNewCurve();
 		break;
-	case '+':
+	case '9':
 		this->currentBezier->upStep();
 		break;
-	case '-':
+	case '3':
 		this->currentBezier->downStep();
 		break;
 	case 'w':
 		this->currentBezier->toggleWireframe();
 		break;
+    case '+':
+        this->selectedBezierIndex--;
+        this->selectedBezierIndex = this->selectedBezierIndex % this->bezierList.size();
+        this->SelectBezier(this->selectedBezierIndex);
+        break;
+    case '-':
+        this->selectedBezierIndex--;
+        this->selectedBezierIndex = this->selectedBezierIndex % this->bezierList.size();
+        this->SelectBezier(this->selectedBezierIndex);
+        break;
     }
 }
 
@@ -66,9 +79,14 @@ void BezierManager::InputMouse(int state, int x, int y)
 
 void BezierManager::SelectBezier(int index)
 {
-
+    this->currentState = BezierManagerState::editPoint;
+    this->currentBezier->myColor = DisableColor;
+    this->currentBezier = this->bezierList.at(index);
+    this->currentBezier->myColor = ActiveColor;
 }
 
 BezierManager::~BezierManager()
 {
+    for (Bezier* b : this->bezierList)
+        delete b;
 }

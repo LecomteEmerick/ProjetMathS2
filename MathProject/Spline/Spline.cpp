@@ -167,6 +167,9 @@ void Spline::draw(GLuint program)
         glEnableVertexAttribArray(positionLocation);
         glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
+        GLint colorLocation = glGetUniformLocation(program, "u_color");
+        glUniform4f(colorLocation, this->myColor.RedValue, this->myColor.GreenValue, this->myColor.BlueValue, 1.0f);
+
         glDrawArrays(GL_POINTS, 0, this->controlPoint.size());
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, refPointEBO);
@@ -181,6 +184,9 @@ void Spline::draw(GLuint program)
         GLint positionLocation = glGetAttribLocation(program, "a_position");
         glEnableVertexAttribArray(positionLocation);
         glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+        GLint colorLocation = glGetUniformLocation(program, "u_color");
+        glUniform4f(colorLocation, this->myColor.RedValue, this->myColor.GreenValue, this->myColor.BlueValue, 1.0f);
 
         glDrawArrays(GL_POINTS, 0, this->b_spline.size());
 

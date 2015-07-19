@@ -16,5 +16,8 @@ private:
     BezierManagerState currentState = BezierManagerState::addPoint;
     Bezier* currentBezier;
     std::vector<Bezier*> bezierList;
+    CustomColor ActiveColor = CustomColor(1.0, 0.0, 0.0);
+    CustomColor DisableColor = CustomColor(0.0, 0.0, 1.0);
+    int selectedBezierIndex = 0;
 };
 
